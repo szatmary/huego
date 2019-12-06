@@ -79,14 +79,13 @@ func unmarshal(data []byte, v interface{}) error {
 	return nil
 }
 
-func get(url string) ([]byte, error) {
+func get(client *http.Client, url string) ([]byte, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	client := http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -103,7 +102,7 @@ func get(url string) ([]byte, error) {
 	return body, nil
 }
 
-func put(url string, data []byte) ([]byte, error) {
+func put(client *http.Client, url string, data []byte) ([]byte, error) {
 
 	body := strings.NewReader(string(data))
 
@@ -114,7 +113,6 @@ func put(url string, data []byte) ([]byte, error) {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	client := http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -131,7 +129,7 @@ func put(url string, data []byte) ([]byte, error) {
 
 }
 
-func post(url string, data []byte) ([]byte, error) {
+func post(client *http.Client, url string, data []byte) ([]byte, error) {
 
 	body := strings.NewReader(string(data))
 
@@ -142,7 +140,6 @@ func post(url string, data []byte) ([]byte, error) {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	client := http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -159,7 +156,7 @@ func post(url string, data []byte) ([]byte, error) {
 
 }
 
-func delete(url string) ([]byte, error) {
+func delete(client *http.Client, url string) ([]byte, error) {
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
@@ -168,7 +165,6 @@ func delete(url string) ([]byte, error) {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	client := http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -241,5 +237,5 @@ func Discover() (*Bridge, error) {
 // h may or may not be prefixed with http(s)://. For example http://192.168.1.20/ or 192.168.1.20.
 // u is a username known to the bridge. Use Discover() and CreateUser() to create a user.
 func New(h, u string) *Bridge {
-	return &Bridge{h, u, ""}
+	return &Bridge{u, &http.Client{}, h, ""}
 }
